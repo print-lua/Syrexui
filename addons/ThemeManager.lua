@@ -48,7 +48,7 @@ if typeof(clonefunction) == "function" then
 end
 
 local ThemeManager = {} do
-	local ThemeFields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor", "VideoLink" }
+	local ThemeFields = { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor", "VideoLink", "BackgroundImage" }
 	ThemeManager.Folder = "LinoriaLibSettings"
 	-- if not isfolder(ThemeManager.Folder) then makefolder(ThemeManager.Folder) end
 
@@ -163,6 +163,16 @@ local ThemeManager = {} do
 				end
 				
 				ApplyBackgroundVideo(col)
+			elseif idx == "BackgroundImage" then
+				self.Library[idx] = col
+				
+				if self.Library.Options[idx] then
+					self.Library.Options[idx]:SetValue(col)
+				end
+				
+				if self.Library.Window then
+					self.Library.Window:SetBackgroundImage(col)
+				end
 			else
 				self.Library[idx] = Color3.fromHex(col)
 				
@@ -187,6 +197,10 @@ local ThemeManager = {} do
 
 				if field == "VideoLink" then
 					ApplyBackgroundVideo(self.Library.Options[field].Value)
+				elseif field == "BackgroundImage" then
+					if self.Library.Window then
+						self.Library.Window:SetBackgroundImage(self.Library.Options[field].Value)
+					end
 				end
 			end
 		end
@@ -247,7 +261,7 @@ local ThemeManager = {} do
 
 		local theme = {}
 		for _, field in next, ThemeFields do
-			if field == "VideoLink" then
+			if field == "VideoLink" or field == "BackgroundImage" then
 				theme[field] = self.Library.Options[field].Value
 			else
 				theme[field] = self.Library.Options[field].Value:ToHex()
@@ -306,6 +320,7 @@ local ThemeManager = {} do
 		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = self.Library.OutlineColor });
 		groupbox:AddLabel('Font color')	:AddColorPicker('FontColor', { Default = self.Library.FontColor });
 		groupbox:AddInput('VideoLink', { Text = '.webm Video Background (Link)', Default = self.Library.VideoLink });
+		groupbox:AddInput('BackgroundImage', { Text = 'Background Image (Asset ID or URL)', Default = self.Library.BackgroundImage });
 		
 		local ThemesArray = {}
 		for Name, Theme in next, self.BuiltInThemes do
@@ -401,6 +416,8 @@ local ThemeManager = {} do
 		self.Library.Options.AccentColor:OnChanged(UpdateTheme)
 		self.Library.Options.OutlineColor:OnChanged(UpdateTheme)
 		self.Library.Options.FontColor:OnChanged(UpdateTheme)
+		self.Library.Options.VideoLink:OnChanged(UpdateTheme)
+		self.Library.Options.BackgroundImage:OnChanged(UpdateTheme)
 	end
 
 	function ThemeManager:CreateGroupBox(tab)
