@@ -268,6 +268,7 @@ local Library = {
 
     -- variables --
     VideoLink = "";
+    BackgroundImage = "";
     
     Toggled = false;
     ToggleKeybind = nil;
@@ -1133,7 +1134,8 @@ local Templates = { -- TO-DO: do it for missing elements.
         NotifySide = "Left",
         ShowCustomCursor = true,
         UnlockMouseWhileOpen = true,
-        Center = false
+        Center = false,
+        BackgroundImage = "74525730979567",
     },
 
     --// Elements \\--
@@ -6688,12 +6690,12 @@ function Library:CreateWindow(...)
     })
     Library.InnerVideoBackground = InnerVideoBackground
 
-    local BackgroundImage = Library:Create("ImageLabel", {
+    local BackgroundImageFrame = Library:Create("ImageLabel", {
         Image = "";
         Position = UDim2.fromScale(0, 0);
         Size = UDim2.fromScale(1, 1);
         ScaleType = Enum.ScaleType.Stretch;
-        ZIndex = 2;
+        ZIndex = 1;
         BackgroundTransparency = 1;
         ImageTransparency = 0.75;
         Parent = TabContainer;
@@ -6713,6 +6715,8 @@ function Library:CreateWindow(...)
     end
 
     function Window:SetBackgroundImage(NewImage)
+        local OriginalImage = NewImage
+
         if tonumber(NewImage) then
             NewImage = "rbxassetid://" .. NewImage
         end
@@ -6721,17 +6725,19 @@ function Library:CreateWindow(...)
 
         local Icon = Library:GetCustomIcon(NewImage)
         if not Icon then
-            BackgroundImage.Visible = false
+            BackgroundImageFrame.Visible = false
+            Library.BackgroundImage = OriginalImage or ""
             return
         end
         
         assert(Icon, "Image must be a valid Roblox asset or a valid URL or a valid lucide icon.")
 
-        BackgroundImage.Image = Icon.Url
-        BackgroundImage.ImageRectOffset = Icon.ImageRectOffset
-        BackgroundImage.ImageRectSize = Icon.ImageRectSize
+        BackgroundImageFrame.Image = Icon.Url
+        BackgroundImageFrame.ImageRectOffset = Icon.ImageRectOffset
+        BackgroundImageFrame.ImageRectSize = Icon.ImageRectSize
 
-        BackgroundImage.Visible = true
+        BackgroundImageFrame.Visible = true
+        Library.BackgroundImage = OriginalImage or NewImage
     end
 
     function Window:AddDialog(Idx, Info)
